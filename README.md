@@ -1,4 +1,4 @@
-# serverless_crawler
+# fastapi-ml-serving
 - crawling data from https://www.daangn.com/hot_articles every minute
 
 ## Output
