@@ -1,13 +1,23 @@
 import json
-import requests as req
-from bs4 import BeautifulSoup
 import datetime
 import logging
 import os
 import boto3
+import lxml
+
+# for scraping
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
+import requests as req
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+# Company Code
+stock_code = int("005930")
+
+# target url
+url = f"https://finance.naver.com/item/sise_day.nhn?code=005930"
 
 def run(event, context):
     
@@ -22,7 +32,6 @@ def run(event, context):
 
     s3_path = current_time + "/" + filename
 
-    url = "https://www.daangn.com/hot_articles"
     
     with open(filepath, "w") as json_file:
         crawled = crawler(url)
@@ -36,7 +45,19 @@ def run(event, context):
 
 
 def crawler(url):
-    r = req.get(url)
-    soup = BeautifulSoup(r.content, "html.parser")
-    output = soup.p.string
-    return output
+    headers = {'User-agent': 'Mozilla/5.0'}
+    r = req.get(url, verify = False, headers = headers)
+    soup = BeautifulSoup(r.text, "lxml")
+    return soup
+
+
+def test_run():
+    
+    crawled = crawler(url)
+
+    return crawled
+
+
+# test
+if __name__ == "__main__":
+    print(crawler(url))
